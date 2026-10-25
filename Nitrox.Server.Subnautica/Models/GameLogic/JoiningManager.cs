@@ -27,6 +27,7 @@ internal sealed class JoiningManager(
     EntitySimulation entitySimulation,
     EscapePodManager escapePodManager,
     EntityRegistry entityRegistry,
+    ResourceTrackerManager resourceTrackerManager,
     SessionSettings sessionSettings,
     IOptions<SubnauticaServerOptions> options,
     ILogger<JoiningManager> logger)
@@ -44,6 +45,7 @@ internal sealed class JoiningManager(
     private readonly ILogger<JoiningManager> logger = logger;
     private readonly EscapePodManager escapePodManager = escapePodManager;
     private readonly EntityRegistry entityRegistry = entityRegistry;
+    private readonly ResourceTrackerManager resourceTrackerManager = resourceTrackerManager;
     private readonly SessionSettings sessionSettings = sessionSettings;
 
     private readonly ThreadSafeQueue<SessionId> joinQueue = new();
@@ -208,7 +210,8 @@ internal sealed class JoiningManager(
             sessionSettings,
             player.InPrecursor,
             player.DisplaySurfaceWater,
-            options.Value.MarkDeathPointsWithBeacon
+            options.Value.MarkDeathPointsWithBeacon,
+            resourceTrackerManager.GetEntries()
         );
 
         await packetSender.SendPacketAsync(initialPlayerSync, player.SessionId);
