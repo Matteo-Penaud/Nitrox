@@ -29,6 +29,13 @@ public static class BatteryChildEntityHelper
 
     public static void PopulateInstalledBattery(EnergyMixin energyMixin, List<Entity> toPopulate, NitroxId parentId)
     {
+        // An already installed battery is tracked with its own charge (see Items.GetPrefabChildren), spawning a default one
+        // would replace it by a fully charged battery each time the item is picked up
+        if (energyMixin.batterySlot?.storedItem != null)
+        {
+            return;
+        }
+
         EnergyMixin[] components = NitroxEntity.RequireObjectFrom(parentId).GetAllComponentsInChildren<EnergyMixin>();
         int componentIndex = 0;
         for (int i = 0; i < components.Length; i++)
