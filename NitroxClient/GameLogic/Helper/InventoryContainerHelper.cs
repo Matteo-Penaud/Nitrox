@@ -31,6 +31,11 @@ namespace NitroxClient.GameLogic.Helper
             {
                 return Optional.Of(seamothStorageContainer.container);
             }
+            MapRoomFunctionality mapRoomFunctionality = owner.GetComponent<MapRoomFunctionality>();
+            if (mapRoomFunctionality)
+            {
+                return Optional.Of(mapRoomFunctionality.storageContainer.container);
+            }
             StorageContainer storageContainer = owner.GetComponentInChildren<StorageContainer>(true);
             if (storageContainer)
             {
@@ -63,6 +68,11 @@ namespace NitroxClient.GameLogic.Helper
             if (parent.TryGetComponent(out WaterPark waterPark))
             {
                 return waterPark.planter.TryGetIdOrWarn(out ownerId);
+            }
+            // Scanner room upgrades are stored in a container somewhere under MapRoomFunctionality, which holds the id
+            else if (parent.TryGetComponentInParent(out MapRoomFunctionality mapRoomFunctionality, true))
+            {
+                return mapRoomFunctionality.TryGetIdOrWarn(out ownerId);
             }
             else if (parent.GetComponent<Constructable>() || parent.GetComponent<IBaseModule>().AliveOrNull())
             {

@@ -169,7 +169,7 @@ public class InteriorPieceEntitySpawner : EntitySpawner<InteriorPieceEntity>
         return interiorPiece;
     }
 
-    public static IEnumerator RestoreMapRoom(Base @base, MapRoomEntity mapRoomEntity)
+    public static IEnumerator RestoreMapRoom(Base @base, MapRoomEntity mapRoomEntity, Entities entities)
     {
         MapRoomFunctionality mapRoomFunctionality = @base.GetMapRoomFunctionalityForCell(mapRoomEntity.Cell.ToUnity());
         if (!mapRoomFunctionality)
@@ -178,5 +178,9 @@ public class InteriorPieceEntitySpawner : EntitySpawner<InteriorPieceEntity>
             yield break;
         }
         NitroxEntity.SetNewId(mapRoomFunctionality.gameObject, mapRoomEntity.Id);
+
+        // Upgrades are stored in the MapRoomFunctionality's storage container.
+        // MapRoomFunctionality isn't destroyed during a resync so already spawned items will only be updated
+        yield return entities.SpawnBatchAsync(mapRoomEntity.ChildEntities.OfType<InventoryItemEntity>().ToList<Entity>());
     }
 }
