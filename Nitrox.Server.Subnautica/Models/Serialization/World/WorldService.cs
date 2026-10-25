@@ -28,6 +28,7 @@ internal class WorldService : IHostedService
     private readonly IOptions<SubnauticaServerOptions> options;
     private readonly PdaManager pdaManager;
     private readonly PlayerManager playerManager;
+    private readonly ResourceTrackerManager resourceTrackerManager;
 
     private readonly TaskCompletionSource<bool> hasFinishedLoadingTcs = new();
     private readonly SaveService saveService;
@@ -54,6 +55,7 @@ internal class WorldService : IHostedService
         TimeService timeService,
         PdaManager pdaManager,
         EscapePodManager escapePodManager,
+        ResourceTrackerManager resourceTrackerManager,
         SaveService saveService,
         IProgressReporter progressReporter,
         IOptions<ServerStartOptions> startOptions,
@@ -70,6 +72,7 @@ internal class WorldService : IHostedService
         this.timeService = timeService;
         this.pdaManager = pdaManager;
         this.escapePodManager = escapePodManager;
+        this.resourceTrackerManager = resourceTrackerManager;
         this.saveService = saveService;
         this.progressReporter = progressReporter;
         this.startOptions = startOptions;
@@ -95,7 +98,7 @@ internal class WorldService : IHostedService
             WorldData = new()
             {
                 ParsedBatchCells = batchEntitySpawner.SerializableParsedBatches,
-                GameData = GameData.From(pdaManager, storyManager.StoryGoalData, storyScheduler, storyManager, timeService)
+                GameData = GameData.From(pdaManager, storyManager.StoryGoalData, storyScheduler, storyManager, timeService, resourceTrackerManager)
             },
             PlayerData = PlayerData.From(playerManager.GetAllPlayers()),
             GlobalRootData = GlobalRootData.From(worldEntityManager.GetPersistentGlobalRootEntities()),
@@ -345,6 +348,8 @@ internal class WorldService : IHostedService
             batchEntitySpawner.SerializableParsedBatches = pWorldData.WorldData.ParsedBatchCells;
             // Pda
             pdaManager.PdaState = pWorldData.WorldData.GameData.PDAState;
+            // Scanner room resources
+            resourceTrackerManager.SetEntries(pWorldData.WorldData.GameData.ResourceTrackerEntries ?? []);
             // Story progression
             storyManager.StoryGoalData = pWorldData.WorldData.GameData.StoryGoals;
             await storyScheduler.ScheduleStoriesIfNotInPast(pWorldData.WorldData.GameData.StoryGoals.ScheduledGoals);
