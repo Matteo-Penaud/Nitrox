@@ -41,6 +41,17 @@ namespace NitroxClient.GameLogic
             return PlayerHasMinLockType(id, SimulationLockType.EXCLUSIVE);
         }
 
+        /// <summary>
+        ///     Base machines (bioreactors, filtration machines...) run on every client but must only create or destroy items once,
+        ///     on the player simulating the base. The other players receive the resulting packets.
+        /// </summary>
+        public bool IsSimulatingBaseOf(Component baseChild)
+        {
+            // A base without an id isn't synced so its machines can run as they would in singleplayer
+            Base parentBase = baseChild.GetComponentInParent<Base>();
+            return !parentBase || !parentBase.TryGetNitroxId(out NitroxId baseId) || HasAnyLockType(baseId);
+        }
+
         public void RequestSimulationLock(NitroxId id, SimulationLockType lockType)
         {
             SimulationOwnershipRequest ownershipRequest = new SimulationOwnershipRequest(multiplayerSession.Reservation.SessionId, id, lockType);

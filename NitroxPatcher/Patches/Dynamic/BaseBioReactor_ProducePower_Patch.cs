@@ -49,8 +49,7 @@ public sealed partial class BaseBioReactor_ProducePower_Patch : NitroxPatch, IDy
     public static void ConsumeItem(BaseBioReactor bioReactor, Pickupable pickupable)
     {
         // In case we don't locally simulate the base, the item will be removed by the EntityDestroyed packet from the simulating player
-        if (bioReactor.transform.parent.TryGetNitroxId(out NitroxId baseId) &&
-            !Resolve<SimulationOwnership>().HasAnyLockType(baseId))
+        if (!Resolve<SimulationOwnership>().IsSimulatingBaseOf(bioReactor))
         {
             return;
         }
