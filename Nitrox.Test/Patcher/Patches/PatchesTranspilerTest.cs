@@ -21,6 +21,7 @@ public class PatchesTranspilerTest
         [typeof(BaseBioReactor_ProducePower_Patch), -6],
         [typeof(BaseDeconstructable_Deconstruct_Patch),BaseDeconstructable_Deconstruct_Patch.InstructionsToAdd(true).Count() * 2],
         [typeof(BaseHullStrength_CrushDamageUpdate_Patch), 3],
+        [typeof(BaseNuclearReactor_ProducePower_Patch), -12],
         [typeof(BreakableResource_SpawnResourceFromPrefab_Patch), 2],
         [typeof(Builder_TryPlace_Patch), Builder_TryPlace_Patch.InstructionsToAdd1.Count + Builder_TryPlace_Patch.InstructionsToAdd2.Count],
         [typeof(CellManager_TryLoadCacheBatchCells_Patch), 4],
